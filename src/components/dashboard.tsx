@@ -9,14 +9,13 @@ import { WeightForm } from "@/components/weight-form";
 import { WeightChart } from "@/components/weight-chart";
 import { WeightList } from "@/components/weight-list";
 import { GoalWeightForm } from "@/components/goal-weight-form";
-import { DeleteAccountModal } from "@/components/delete-account-modal";
+import { SettingsMenu } from "@/components/settings-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { calculate_dashboard_stats } from "@/lib/utils";
-import { LogOut, User, Scale } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Scale } from "lucide-react";
 
 export function Dashboard() {
-  const { user, sign_out } = useAuth();
+  const { user } = useAuth();
   const { data: weights = [], isLoading: weights_loading } = use_weights();
   const { data: user_profile, isLoading: profile_loading } = use_user_profile();
   const [selected_date, set_selected_date] = useState<string>(
@@ -33,14 +32,6 @@ export function Dashboard() {
   useEffect(() => {
     testSupabaseConnection();
   }, []);
-
-  const handle_sign_out = async () => {
-    try {
-      await sign_out();
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   if (weights_loading || profile_loading) {
     return (
@@ -65,14 +56,7 @@ export function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <User className="h-4 w-4" />
-                <span>{user?.email}</span>
-              </div>
-              <Button variant="outline" size="sm" onClick={handle_sign_out}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
+              <SettingsMenu />
             </div>
           </div>
         </div>
@@ -121,12 +105,6 @@ export function Dashboard() {
                   unit="kg"
                 />
               </div>
-            </div>
-
-            {/* Account Management */}
-            <div className="pt-4 border-t">
-              <h3 className="text-lg font-semibold mb-4">Account</h3>
-              <DeleteAccountModal />
             </div>
           </div>
 
