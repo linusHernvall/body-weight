@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { use_update_goal_weight } from "@/hooks/use-weights";
+import { format_weight_value } from "@/lib/utils";
 import { Target } from "lucide-react";
 
 const goal_weight_schema = z.object({
@@ -71,7 +72,9 @@ export function GoalWeightForm({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{current_goal_weight} kg</div>
+            <div className="text-2xl font-bold">
+              {format_weight_value(current_goal_weight)}
+            </div>
             <Button onClick={handle_edit} variant="outline" size="sm">
               Edit Goal
             </Button>

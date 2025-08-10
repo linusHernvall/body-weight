@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Weight } from "@/types";
-import { format_date } from "@/lib/utils";
+import { format_date, format_weight_value } from "@/lib/utils";
 
 interface WeightChartProps {
   weights: Weight[];
@@ -54,9 +54,13 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
       return (
         <div className="bg-background border rounded-lg p-3 shadow-lg">
           <p className="font-medium">{label}</p>
-          <p className="text-primary">Weight: {payload[0].value} kg</p>
+          <p className="text-primary">
+            Weight: {format_weight_value(payload[0].value)}
+          </p>
           {goal_weight && (
-            <p className="text-muted-foreground">Goal: {goal_weight} kg</p>
+            <p className="text-muted-foreground">
+              Goal: {format_weight_value(goal_weight)}
+            </p>
           )}
         </div>
       );

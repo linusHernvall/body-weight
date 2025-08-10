@@ -122,3 +122,11 @@ export function get_weight_color(current: number, goal: number | null): string {
   if (percentage < 5) return "text-yellow-600 dark:text-yellow-400";
   return "text-red-600 dark:text-red-400";
 }
+
+// Weight formatting utility
+export function format_weight_value(
+  value: number,
+  unit: string = "kg"
+): string {
+  return `${value.toFixed(1)} ${unit}`;
+}

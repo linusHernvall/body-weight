@@ -14,7 +14,7 @@ import {
   use_weight_by_date,
 } from "@/hooks/use-weights";
 import { Weight } from "@/types";
-import { format_date } from "@/lib/utils";
+import { format_date, format_weight_value } from "@/lib/utils";
 
 const weight_schema = z.object({
   date: z.string().min(1, "Date is required"),
@@ -88,7 +88,9 @@ export function WeightForm({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold">{existing_weight.value} kg</div>
+            <div className="text-2xl font-bold">
+              {format_weight_value(existing_weight.value)}
+            </div>
             <Button onClick={handle_edit} variant="outline" size="sm">
               Edit
             </Button>

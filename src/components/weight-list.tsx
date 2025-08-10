@@ -5,7 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Weight } from "@/types";
-import { format_date, get_weight_color } from "@/lib/utils";
+import {
+  format_date,
+  get_weight_color,
+  format_weight_value,
+} from "@/lib/utils";
 import { use_update_weight, use_delete_weight } from "@/hooks/use-weights";
 import { Edit2, Trash2, Check, X } from "lucide-react";
 
@@ -103,7 +107,9 @@ export function WeightList({ weights, goal_weight }: WeightListProps) {
                     <span className="text-sm text-muted-foreground">kg</span>
                   </div>
                 ) : (
-                  <div className="text-2xl font-bold">{weight.value} kg</div>
+                  <div className="text-2xl font-bold">
+                    {format_weight_value(weight.value)}
+                  </div>
                 )}
               </div>
 

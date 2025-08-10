@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, format_weight_value } from "@/lib/utils";
 
 interface DashboardCardProps {
   title: string;
@@ -39,7 +39,9 @@ export function DashboardCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {value !== null ? `${value} ${unit}` : "No data"}
+          {value !== null
+            ? format_weight_value(value as number, unit)
+            : "No data"}
         </div>
         {change !== null && change !== undefined && (
           <div className="flex items-center text-xs text-muted-foreground mt-1">
