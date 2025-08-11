@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn, format_weight_value } from "@/lib/utils";
 
 interface DashboardCardProps {
@@ -21,12 +20,6 @@ export function DashboardCard({
   icon,
   className,
 }: DashboardCardProps) {
-  const format_change = (change: number) => {
-    const is_positive = change > 0;
-    const formatted = Math.abs(change).toFixed(1);
-    return { formatted, is_positive };
-  };
-
   return (
     <Card
       className={cn("transition-all duration-200 hover:shadow-md", className)}
@@ -39,37 +32,16 @@ export function DashboardCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {value !== null
+          {change !== null && change !== undefined
+            ? // Show change value with +/- sign as main value
+              `${change > 0 ? "+ " : change < 0 ? "- " : ""}${Math.abs(
+                change
+              ).toFixed(1)} ${unit}`
+            : // Show regular value
+            value !== null
             ? format_weight_value(value as number, unit)
             : "No data"}
         </div>
-        {change !== null && change !== undefined && (
-          <div className="flex items-center text-xs text-muted-foreground mt-1">
-            {change === 0 ? (
-              <>
-                <Minus className="h-3 w-3 mr-1" />
-                <span>No change</span>
-              </>
-            ) : (
-              <>
-                {change > 0 ? (
-                  <TrendingUp className="h-3 w-3 mr-1 text-red-600 dark:text-red-400" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 mr-1 text-green-600 dark:text-green-400" />
-                )}
-                <span
-                  className={cn(
-                    change > 0
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-green-600 dark:text-green-400"
-                  )}
-                >
-                  {format_change(change).formatted} {unit}
-                </span>
-              </>
-            )}
-          </div>
-        )}
       </CardContent>
     </Card>
   );

@@ -83,72 +83,80 @@ export function WeightList({ weights, goal_weight }: WeightListProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {weights.map((weight) => (
-            <div
-              key={weight.id}
-              className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${get_weight_color(
-                weight.value,
-                goal_weight
-              )}`}
-            >
-              <div className="flex-1">
-                <div className="font-medium">{format_date(weight.date)}</div>
-                {editing_id === weight.id ? (
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={edit_value}
-                      onChange={(e) =>
-                        set_edit_value(parseFloat(e.target.value) || 0)
-                      }
-                      className="w-20"
-                    />
-                    <span className="text-sm text-muted-foreground">kg</span>
-                  </div>
-                ) : (
-                  <div className="text-2xl font-bold">
-                    {format_weight_value(weight.value)}
-                  </div>
-                )}
-              </div>
+          {weights
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+            .map((weight) => (
+              <div
+                key={weight.id}
+                className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${get_weight_color(
+                  weight.value,
+                  goal_weight
+                )}`}
+              >
+                <div className="flex-1">
+                  <div className="font-medium">{format_date(weight.date)}</div>
+                  {editing_id === weight.id ? (
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={edit_value}
+                        onChange={(e) =>
+                          set_edit_value(parseFloat(e.target.value) || 0)
+                        }
+                        className="w-20"
+                      />
+                      <span className="text-sm text-muted-foreground">kg</span>
+                    </div>
+                  ) : (
+                    <div className="text-2xl font-bold">
+                      {format_weight_value(weight.value)}
+                    </div>
+                  )}
+                </div>
 
-              <div className="flex items-center gap-2">
-                {editing_id === weight.id ? (
-                  <>
-                    <Button
-                      size="sm"
-                      onClick={handle_save}
-                      disabled={update_weight_mutation.isPending}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={handle_cancel}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handle_edit(weight)}
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handle_delete(weight.id)}
-                      disabled={delete_weight_mutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
+                <div className="flex items-center gap-2">
+                  {editing_id === weight.id ? (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={handle_save}
+                        disabled={update_weight_mutation.isPending}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handle_cancel}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handle_edit(weight)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handle_delete(weight.id)}
+                        disabled={delete_weight_mutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </CardContent>
     </Card>
