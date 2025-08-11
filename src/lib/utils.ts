@@ -18,8 +18,11 @@ export function format_date(date: string | Date): string {
 export function get_week_start(date: Date): Date {
   const d = new Date(date);
   const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-  return new Date(d.setDate(diff));
+  // Monday is 1, Sunday is 0, so we need to adjust accordingly
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const week_start = new Date(d);
+  week_start.setDate(diff);
+  return week_start;
 }
 
 export function get_week_end(date: Date): Date {
@@ -29,29 +32,104 @@ export function get_week_end(date: Date): Date {
   return week_end;
 }
 
+export function get_week_key(date: Date): string {
+  const week_start = get_week_start(date);
+  return week_start.toISOString().split("T")[0];
+}
+
+export function format_week_range(
+  week_start: string,
+  week_end: string
+): string {
+  const start_date = new Date(week_start);
+  const end_date = new Date(week_end);
+
+  const start_month = start_date.toLocaleDateString("en-US", {
+    month: "short",
+  });
+  const end_month = end_date.toLocaleDateString("en-US", { month: "short" });
+
+  if (start_date.getMonth() === end_date.getMonth()) {
+    return `${start_date.getDate()} ${start_month}-${end_date.getDate()} ${start_month}`;
+  } else {
+    return `${start_date.getDate()} ${start_month}-${end_date.getDate()} ${end_month}`;
+  }
+}
+
+export function is_current_week(week_start: string): boolean {
+  const current_week_start = get_week_start(new Date());
+  return week_start === current_week_start.toISOString().split("T")[0];
+}
+
+export function is_previous_week(week_start: string): boolean {
+  const current_week_start = get_week_start(new Date());
+  const previous_week_start = new Date(current_week_start);
+  previous_week_start.setDate(previous_week_start.getDate() - 7);
+  return week_start === previous_week_start.toISOString().split("T")[0];
+}
+
 // Weight calculation utilities
 export function calculate_weekly_averages(
-  weights: Array<{ date: string; value: number }>
-) {
-  const weekly_data: { [key: string]: number[] } = {};
+  weights: Array<{
+    id: string;
+    date: string;
+    value: number;
+    user_id: string;
+    created_at: string;
+  }>
+): Array<{
+  week_start: string;
+  week_end: string;
+  average: number;
+  count: number;
+  weights: Array<{
+    id: string;
+    date: string;
+    value: number;
+    user_id: string;
+    created_at: string;
+  }>;
+}> {
+  const weekly_data: {
+    [key: string]: Array<{
+      id: string;
+      date: string;
+      value: number;
+      user_id: string;
+      created_at: string;
+    }>;
+  } = {};
 
   weights.forEach((weight) => {
     const date = new Date(weight.date);
-    const week_start = get_week_start(date);
-    const week_key = week_start.toISOString().split("T")[0];
+    const week_key = get_week_key(date);
 
     if (!weekly_data[week_key]) {
       weekly_data[week_key] = [];
     }
-    weekly_data[week_key].push(weight.value);
+    weekly_data[week_key].push(weight);
   });
 
-  return Object.entries(weekly_data).map(([week_start, values]) => ({
-    week_start,
-    week_end: get_week_end(new Date(week_start)).toISOString().split("T")[0],
-    average: values.reduce((sum, val) => sum + val, 0) / values.length,
-    count: values.length,
-  }));
+  return Object.entries(weekly_data)
+    .map(([week_start, week_weights]) => {
+      const week_end = get_week_end(new Date(week_start));
+      const values = week_weights.map((w) => w.value);
+      const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+
+      return {
+        week_start,
+        week_end: week_end.toISOString().split("T")[0],
+        average: Math.round(average * 10) / 10, // Round to 1 decimal place
+        count: values.length,
+        weights: week_weights.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        ),
+      };
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.week_start).getTime() - new Date(a.week_start).getTime()
+    );
 }
 
 export function calculate_dashboard_stats(

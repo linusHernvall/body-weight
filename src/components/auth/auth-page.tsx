@@ -12,10 +12,10 @@ export function AuthPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Body Weight Tracker
+            MassLog
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track your weight progress with beautiful charts and insights
+            Track your weight progress with charts and insights
           </p>
         </div>
 

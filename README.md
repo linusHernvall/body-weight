@@ -1,4 +1,4 @@
-# Body Weight Tracker
+# MassLog
 
 A modern, full-stack weight tracking application built with Next.js 14, Supabase, and TypeScript. Track your weight progress with beautiful charts, statistics, and insights.
 
@@ -7,6 +7,7 @@ A modern, full-stack weight tracking application built with Next.js 14, Supabase
 - **📊 Weight Tracking**: Record daily weight entries with date selection
 - **📈 Beautiful Charts**: Visualize your progress with interactive line charts
 - **🎯 Goal Setting**: Set and track your goal weight
+- **📅 Weekly Averages**: View weekly weight averages grouped by Monday-Sunday weeks
 - **📱 Responsive Design**: Works perfectly on mobile, tablet, and desktop
 - **🌙 Dark Mode**: Toggle between light and dark themes
 - **🔐 User Authentication**: Secure email/password authentication
@@ -14,6 +15,38 @@ A modern, full-stack weight tracking application built with Next.js 14, Supabase
 - **✏️ Inline Editing**: Edit weight entries directly in the list
 - **🗑️ Account Management**: Delete your account and all data
 - **🎨 Modern UI**: Built with Shadcn/UI components
+
+## 📅 Weekly Average Feature
+
+The application automatically calculates and displays weekly weight averages based on the following rules:
+
+### Week Definition
+
+- **Week Structure**: Each week runs from Monday to Sunday
+- **Date Assignment**: All logged weights between Monday and Sunday are grouped together
+- **Example**: Monday, August 11, 2025 belongs to week 33, not week 32
+
+### Calculation Method
+
+- **Average Formula**: Sum all recorded daily weights within a week and divide by the number of logged days
+- **Precision**: Results are rounded to one decimal place
+- **Partial Weeks**: Weeks with partial data still display an average based on available entries
+
+### Display Format
+
+- **Mobile**: Weekly averages appear next to the week's date range (e.g., "80 kg average")
+- **Desktop**: Clear, readable format with week headers and grouped daily entries
+- **Week Labels**:
+  - "This week" for the current Monday-Sunday period
+  - "Last week" for the previous Monday-Sunday period
+  - Date ranges for older weeks (e.g., "Aug 4 - Aug 10")
+
+### Data Organization
+
+- Daily weight entries are grouped under their respective weekly headers
+- Each week shows the calculated average prominently
+- Entries within each week are sorted by date (newest first)
+- Maintains all existing functionality (edit, delete, goal weight comparison)
 
 ## 🛠️ Tech Stack
 

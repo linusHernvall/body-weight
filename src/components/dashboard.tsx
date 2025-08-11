@@ -7,7 +7,7 @@ import { testSupabaseConnection } from "@/lib/test-connection";
 import { DashboardCard } from "@/components/dashboard-card";
 import { WeightForm } from "@/components/weight-form";
 import { WeightChart } from "@/components/weight-chart";
-import { WeightList } from "@/components/weight-list";
+import { WeeklyWeightList } from "@/components/weekly-weight-list";
 import { GoalWeightForm } from "@/components/goal-weight-form";
 import { SettingsMenu } from "@/components/settings-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -52,7 +52,7 @@ export function Dashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Scale className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">Body Weight Tracker</h1>
+              <h1 className="text-2xl font-bold">MassLog</h1>
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
@@ -99,11 +99,6 @@ export function Dashboard() {
                   change={stats.total_change}
                   unit="kg"
                 />
-                <DashboardCard
-                  title="Weekly Average"
-                  value={stats.weekly_average}
-                  unit="kg"
-                />
               </div>
             </div>
           </div>
@@ -117,7 +112,7 @@ export function Dashboard() {
             />
 
             {/* Weight History */}
-            <WeightList
+            <WeeklyWeightList
               weights={weights}
               goal_weight={user_profile?.goal_weight || null}
             />

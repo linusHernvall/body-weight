@@ -6,8 +6,8 @@ import { Providers } from "@/components/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Body Weight Tracker",
-  description: "Track your weight progress with beautiful charts and insights",
+  title: "MassLog",
+  description: "Track your weight progress with charts and insights",
 };
 
 export default function RootLayout({

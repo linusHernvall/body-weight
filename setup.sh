@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Body Weight Tracker..."
+echo "🚀 Setting up MassLog..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then

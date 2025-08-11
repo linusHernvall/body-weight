@@ -1,6 +1,6 @@
 # 🚀 Quick Start Guide
 
-Get your Body Weight Tracker up and running in 5 minutes!
+Get your MassLog up and running in 5 minutes!
 
 ## Prerequisites
 
