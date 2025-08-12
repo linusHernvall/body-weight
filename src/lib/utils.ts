@@ -189,18 +189,6 @@ export function calculate_dashboard_stats(
   };
 }
 
-// Color utilities for weight comparison
-export function get_weight_color(current: number, goal: number | null): string {
-  if (!goal) return "text-foreground";
-
-  const diff = current - goal;
-  const percentage = (Math.abs(diff) / goal) * 100;
-
-  if (percentage < 2) return "text-green-600 dark:text-green-400";
-  if (percentage < 5) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
-}
-
 // Weight formatting utility
 export function format_weight_value(
   value: number,

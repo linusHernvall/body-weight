@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 type Theme = "dark" | "light" | "system";
 
 export function useTheme() {
-  const [theme, set_theme] = useState<Theme>("system");
+  const [theme, set_theme] = useState<Theme>("dark"); // Changed default from "system" to "dark"
   const [resolved_theme, set_resolved_theme] = useState<"dark" | "light">(
-    "light"
+    "dark" // Changed default from "light" to "dark"
   );
 
   useEffect(() => {
@@ -14,6 +14,7 @@ export function useTheme() {
     if (saved_theme) {
       set_theme(saved_theme);
     }
+    // If no saved theme, keep dark as default (already set above)
   }, []);
 
   useEffect(() => {

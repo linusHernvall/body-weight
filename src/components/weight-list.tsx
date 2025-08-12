@@ -5,11 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Weight } from "@/types";
-import {
-  format_date,
-  get_weight_color,
-  format_weight_value,
-} from "@/lib/utils";
+import { format_date, format_weight_value } from "@/lib/utils";
 import { use_update_weight, use_delete_weight } from "@/hooks/use-weights";
 import { Edit2, Trash2, Check, X } from "lucide-react";
 
@@ -90,13 +86,12 @@ export function WeightList({ weights, goal_weight }: WeightListProps) {
             .map((weight) => (
               <div
                 key={weight.id}
-                className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${get_weight_color(
-                  weight.value,
-                  goal_weight
-                )}`}
+                className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
               >
                 <div className="flex-1">
-                  <div className="font-medium">{format_date(weight.date)}</div>
+                  <div className="font-medium text-foreground">
+                    {format_date(weight.date)}
+                  </div>
                   {editing_id === weight.id ? (
                     <div className="flex items-center gap-2 mt-1">
                       <Input
@@ -111,7 +106,7 @@ export function WeightList({ weights, goal_weight }: WeightListProps) {
                       <span className="text-sm text-muted-foreground">kg</span>
                     </div>
                   ) : (
-                    <div className="text-2xl font-bold">
+                    <div className="text-2xl font-bold text-primary">
                       {format_weight_value(weight.value)}
                     </div>
                   )}

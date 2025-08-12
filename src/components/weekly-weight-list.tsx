@@ -10,7 +10,6 @@ import {
   format_date,
   format_week_range,
   format_weight_value,
-  get_weight_color,
   is_current_week,
   is_previous_week,
 } from "@/lib/utils";
@@ -167,13 +166,10 @@ export function WeeklyWeightList({
                 {week.weights.map((weight) => (
                   <div
                     key={weight.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${get_weight_color(
-                      weight.value,
-                      goal_weight
-                    )}`}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex-1">
-                      <div className="font-medium">
+                      <div className="font-medium text-foreground">
                         {format_date(weight.date)}
                       </div>
                       {editing_id === weight.id ? (
@@ -192,7 +188,7 @@ export function WeeklyWeightList({
                           </span>
                         </div>
                       ) : (
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-bold text-primary">
                           {format_weight_value(weight.value)}
                         </div>
                       )}
