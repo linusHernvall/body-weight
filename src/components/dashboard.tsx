@@ -13,6 +13,7 @@ import { SettingsMenu } from "@/components/settings-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { calculate_dashboard_stats } from "@/lib/utils";
 import { Scale } from "lucide-react";
+import Image from "next/image";
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -50,8 +51,14 @@ export function Dashboard() {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Scale className="h-8 w-8 text-primary" />
+            <div className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="MassLog"
+                width={80}
+                height={80}
+                className="h-20 w-20"
+              />
               <h1 className="text-2xl font-bold">MassLog</h1>
             </div>
             <div className="flex items-center gap-2">
