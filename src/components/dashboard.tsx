@@ -88,7 +88,7 @@ export function Dashboard() {
                   unit="kg"
                 />
                 <DashboardCard
-                  title="Weekly Change"
+                  title="Weekly Change (Avg)"
                   value={stats.weight_change_week}
                   change={stats.weight_change_week}
                   unit="kg"

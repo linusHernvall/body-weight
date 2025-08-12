@@ -132,6 +132,48 @@ export function calculate_weekly_averages(
     );
 }
 
+// Helper function to calculate weekly averages from simplified weight data
+function calculate_weekly_averages_simple(
+  weights: Array<{ date: string; value: number }>
+): Array<{
+  week_start: string;
+  week_end: string;
+  average: number;
+  count: number;
+}> {
+  const weekly_data: {
+    [key: string]: Array<{ date: string; value: number }>;
+  } = {};
+
+  weights.forEach((weight) => {
+    const date = new Date(weight.date);
+    const week_key = get_week_key(date);
+
+    if (!weekly_data[week_key]) {
+      weekly_data[week_key] = [];
+    }
+    weekly_data[week_key].push(weight);
+  });
+
+  return Object.entries(weekly_data)
+    .map(([week_start, week_weights]) => {
+      const week_end = get_week_end(new Date(week_start));
+      const values = week_weights.map((w) => w.value);
+      const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+
+      return {
+        week_start,
+        week_end: week_end.toISOString().split("T")[0],
+        average: Math.round(average * 10) / 10, // Round to 1 decimal place
+        count: values.length,
+      };
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.week_start).getTime() - new Date(a.week_start).getTime()
+    );
+}
+
 export function calculate_dashboard_stats(
   weights: Array<{ date: string; value: number }>,
   goal_weight: number | null
@@ -158,18 +200,26 @@ export function calculate_dashboard_stats(
   const first_weight = sorted_weights[sorted_weights.length - 1].value;
   const total_change = current_weight - first_weight;
 
-  // Calculate weekly change
-  const one_week_ago = new Date();
-  one_week_ago.setDate(one_week_ago.getDate() - 7);
-  const week_ago_weight = sorted_weights.find(
-    (w) => new Date(w.date) <= one_week_ago
-  )?.value;
+  // Calculate weekly averages for more accurate weekly change
+  const weekly_averages = calculate_weekly_averages_simple(weights);
 
-  const weight_change_week = week_ago_weight
-    ? current_weight - week_ago_weight
-    : null;
+  // Get current week average
+  const current_week_average = weekly_averages.find((week) =>
+    is_current_week(week.week_start)
+  )?.average;
 
-  // Calculate current week average
+  // Get previous week average
+  const previous_week_average = weekly_averages.find((week) =>
+    is_previous_week(week.week_start)
+  )?.average;
+
+  // Calculate weekly change using weekly averages
+  const weight_change_week =
+    current_week_average && previous_week_average
+      ? current_week_average - previous_week_average
+      : null;
+
+  // Calculate current week average (for display purposes)
   const current_week_start = get_week_start(new Date());
   const current_week_weights = sorted_weights.filter(
     (w) => new Date(w.date) >= current_week_start
