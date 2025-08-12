@@ -147,7 +147,7 @@ export function WeeklyWeightList({
                   <div className="font-semibold text-blue-800 dark:text-blue-200">
                     {get_week_header_text(week.week_start)}
                   </div>
-                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                  <div className="text-xs text-blue-800 dark:text-blue-400">
                     {get_week_subtitle(week.week_start)}
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export function WeeklyWeightList({
                   <div className="text-lg font-bold text-blue-800 dark:text-blue-200">
                     {week.average} kg
                   </div>
-                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                  <div className="text-xs text-blue-800 dark:text-blue-400">
                     average ({week.count} entries)
                   </div>
                 </div>
