@@ -37,6 +37,10 @@ export function useAuth() {
     return auth_api.sign_in(email, password);
   };
 
+  const reset_password = async (email: string) => {
+    return auth_api.reset_password(email);
+  };
+
   const sign_out = async () => {
     return auth_api.sign_out();
   };
@@ -50,6 +54,7 @@ export function useAuth() {
     loading,
     sign_up,
     sign_in,
+    reset_password,
     sign_out,
     delete_account,
   };

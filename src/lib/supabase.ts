@@ -136,6 +136,15 @@ export const auth_api = {
     return data;
   },
 
+  // Reset password
+  async reset_password(email: string) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth?type=recovery`,
+    });
+
+    if (error) throw error;
+  },
+
   // Sign out
   async sign_out() {
     const { error } = await supabase.auth.signOut();

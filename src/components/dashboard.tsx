@@ -58,7 +58,7 @@ export function Dashboard() {
                 <Image
                   key={theme}
                   src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
-                  alt="MassLog"
+                  alt="MassLog Logo"
                   width={200}
                   height={80}
                   className="w-50 h-20"

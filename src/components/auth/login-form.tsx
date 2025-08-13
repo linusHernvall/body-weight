@@ -20,9 +20,13 @@ type LoginFormData = z.infer<typeof login_schema>;
 
 interface LoginFormProps {
   on_switch_to_signup: () => void;
+  on_switch_to_reset: () => void;
 }
 
-export function LoginForm({ on_switch_to_signup }: LoginFormProps) {
+export function LoginForm({
+  on_switch_to_signup,
+  on_switch_to_reset,
+}: LoginFormProps) {
   const [error, set_error] = useState<string | null>(null);
   const { sign_in } = useAuth();
 
@@ -46,9 +50,11 @@ export function LoginForm({ on_switch_to_signup }: LoginFormProps) {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
+        <CardTitle className="text-2xl text-center">
+          Continue your progress
+        </CardTitle>
         <p className="text-center text-muted-foreground">
-          Enter your credentials to access your account
+          Enter your credentials to access your account.
         </p>
       </CardHeader>
       <CardContent>
@@ -89,6 +95,15 @@ export function LoginForm({ on_switch_to_signup }: LoginFormProps) {
                 {form.formState.errors.password.message}
               </p>
             )}
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={on_switch_to_reset}
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
           </div>
 
           {error && (
