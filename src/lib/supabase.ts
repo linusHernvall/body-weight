@@ -1,23 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/supabase";
 
-// Create a function to get the Supabase client
-// This ensures environment variables are available when the client is created
-function createSupabaseClient() {
-  const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabase_anon_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Create the Supabase client
+const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabase_anon_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabase_url || !supabase_anon_key) {
-    // During build time or when env vars are missing, create a dummy client
-    // This prevents build errors while still allowing runtime checks
-    return createClient<Database>("https://dummy.supabase.co", "dummy-key");
-  }
-
-  return createClient<Database>(supabase_url, supabase_anon_key);
+// Check if environment variables are available
+if (!supabase_url || !supabase_anon_key) {
+  console.error("Missing Supabase environment variables:", {
+    url: supabase_url ? "Set" : "Missing",
+    key: supabase_anon_key ? "Set" : "Missing",
+  });
 }
 
 // Create the Supabase client instance
-export const supabase = createSupabaseClient();
+export const supabase = createClient<Database>(
+  supabase_url || "https://dummy.supabase.co",
+  supabase_anon_key || "dummy-key"
+);
 
 // Database helper functions
 export const weights_api = {
