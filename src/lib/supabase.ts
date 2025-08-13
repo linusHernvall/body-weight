@@ -183,11 +183,45 @@ export const auth_api = {
 
   // Delete user account
   async delete_user() {
-    const { error } = await supabase.auth.admin.deleteUser(
-      (
-        await supabase.auth.getUser()
-      ).data.user?.id!
-    );
-    if (error) throw error;
+    console.log("🗑️ Starting secure account deletion process...");
+
+    try {
+      // Get current user ID
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error("No authenticated user found");
+      }
+
+      // Call the server-side API route to delete the user account with admin privileges
+      const response = await fetch("/api/delete-account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+
+      if (!response.ok) {
+        const error_data = await response.json();
+        throw new Error(error_data.error || "Failed to delete account");
+      }
+
+      console.log("✅ Account deletion completed successfully");
+
+      // Sign out the user on the client side
+      const { error: signout_error } = await supabase.auth.signOut();
+
+      if (signout_error) {
+        console.warn("⚠️ Warning: Could not sign out user:", signout_error);
+      } else {
+        console.log("✅ User signed out successfully");
+      }
+    } catch (error) {
+      console.error("❌ Account deletion failed:", error);
+      throw error;
+    }
   },
 };

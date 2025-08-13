@@ -139,7 +139,7 @@ export function SettingsMenu() {
           onClick={() => set_active_section("delete_account")}
         >
           <Trash2 className="h-4 w-4 mr-2" />
-          Delete Account
+          Delete Account & Data
         </Button>
       </div>
     </div>
@@ -200,8 +200,9 @@ export function SettingsMenu() {
     <div className="space-y-4">
       <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
         <p className="text-sm text-destructive">
-          <strong>Warning:</strong> All your weight data, goal settings, and
-          account information will be permanently deleted.
+          <strong>Warning:</strong> All your weight data and goal settings will
+          be permanently deleted. You will be signed out and your account will
+          be permanently deleted. This action cannot be undone.
         </p>
       </div>
 
@@ -248,7 +249,6 @@ export function SettingsMenu() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
             {active_section === "main" && "Settings"}
             {active_section === "change_password" && "Change Password"}
             {active_section === "delete_account" && (
@@ -270,8 +270,9 @@ export function SettingsMenu() {
           )}
           {active_section === "delete_account" && (
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove all your weight data from our servers.
+              This action cannot be undone. This will permanently delete all
+              your weight data and your account. You will be signed out and will
+              not be able to log in again.
             </DialogDescription>
           )}
         </DialogHeader>

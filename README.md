@@ -86,7 +86,10 @@ npm install
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
+
+**Important**: You'll need the service role key for admin operations like user account deletion. Get this from your Supabase Dashboard > Settings > API > service_role key.
 
 ### 3. Set up Database
 
