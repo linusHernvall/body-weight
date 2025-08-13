@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { use_weights, use_user_profile } from "@/hooks/use-weights";
 import { useTheme } from "next-themes";
-import { testSupabaseConnection } from "@/lib/test-connection";
+
 import { DashboardCard } from "@/components/dashboard-card";
 import { WeightForm } from "@/components/weight-form";
 import { WeightChart } from "@/components/weight-chart";
@@ -30,11 +30,6 @@ export function Dashboard() {
     user_profile?.goal_weight || null
   );
   const today_weight = weights.find((w) => w.date === selected_date);
-
-  // Test connection on component mount
-  useEffect(() => {
-    testSupabaseConnection();
-  }, []);
 
   // Handle hydration
   useEffect(() => {
