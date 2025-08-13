@@ -40,7 +40,7 @@ export function AuthPage() {
             Welcome to MassLog!
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Track your weight progress with charts and insights
+            Track your weight progress with charts and insights.
           </p>
         </div>
 

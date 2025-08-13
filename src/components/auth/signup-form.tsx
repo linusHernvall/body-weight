@@ -60,7 +60,7 @@ export function SignupForm({ on_switch_to_login }: SignupFormProps) {
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">Create account</CardTitle>
         <p className="text-center text-muted-foreground">
-          Enter your details to create your account
+          Enter your details to create your account.
         </p>
       </CardHeader>
       <CardContent>

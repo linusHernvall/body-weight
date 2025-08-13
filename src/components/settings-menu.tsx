@@ -260,7 +260,7 @@ export function SettingsMenu() {
           </DialogTitle>
           {active_section === "main" && (
             <DialogDescription>
-              Manage your account settings and preferences
+              Manage your account settings and preferences.
             </DialogDescription>
           )}
           {active_section === "change_password" && (
