@@ -40,14 +40,40 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
     );
   }
 
-  // Sort weights by date and format for chart
-  const chart_data = weights
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map((weight) => ({
-      date: format_date(weight.date),
-      weight: weight.value,
-      goal: goal_weight,
-    }));
+  // Sort weights by date
+  const sorted_weights = weights.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  // Calculate the date range for the chart
+  const today = new Date();
+  const one_month_ago = new Date(today);
+  one_month_ago.setMonth(today.getMonth() - 1);
+
+  const first_recorded_date = new Date(sorted_weights[0].date);
+  const last_recorded_date = new Date(
+    sorted_weights[sorted_weights.length - 1].date
+  );
+
+  // Determine the start date for the chart
+  // If we have data from a month ago, start from a month ago
+  // Otherwise, start from the first recorded date
+  const chart_start_date =
+    first_recorded_date <= one_month_ago ? one_month_ago : first_recorded_date;
+
+  // Filter weights to show only the relevant date range
+  const filtered_weights = sorted_weights.filter((weight) => {
+    const weight_date = new Date(weight.date);
+    return weight_date >= chart_start_date && weight_date <= today;
+  });
+
+  // Format data for chart
+  const chart_data = filtered_weights.map((weight) => ({
+    date: format_date(weight.date),
+    weight: weight.value,
+    goal: goal_weight,
+    raw_date: weight.date, // Keep raw date for custom tick formatting
+  }));
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -68,6 +94,28 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
     return null;
   };
 
+  // Custom tick formatter to show only first and last dates
+  const CustomTick = ({ x, y, payload }: any) => {
+    const is_first = payload.index === 0;
+    const is_last = payload.index === chart_data.length - 1;
+
+    if (!is_first && !is_last) {
+      return null;
+    }
+
+    return (
+      <text
+        x={x}
+        y={y}
+        dy={16}
+        textAnchor="middle"
+        className="text-xs fill-foreground"
+      >
+        {payload.value}
+      </text>
+    );
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -76,11 +124,15 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chart_data}>
-            <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-            <XAxis dataKey="date" className="text-xs" tick={{ fontSize: 12 }} />
-            <YAxis
+            <XAxis
+              dataKey="date"
               className="text-xs"
-              tick={{ fontSize: 12 }}
+              tick={<CustomTick />}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              className="text-xs fill-foreground"
+              tick={{ fontSize: 12, fill: "currentColor" }}
               domain={["dataMin - 2", "dataMax + 2"]}
             />
             <Tooltip content={<CustomTooltip />} />
