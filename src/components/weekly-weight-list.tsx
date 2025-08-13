@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +17,7 @@ import {
 } from "@/lib/utils";
 import { use_update_weight, use_delete_weight } from "@/hooks/use-weights";
 import { Edit2, Trash2, Check, X } from "lucide-react";
+import React from "react";
 
 interface WeeklyWeightListProps {
   weights: Weight[];
@@ -27,11 +30,38 @@ export function WeeklyWeightList({
 }: WeeklyWeightListProps) {
   const [editing_id, set_editing_id] = useState<string | null>(null);
   const [edit_value, set_edit_value] = useState<number>(0);
+  const [expanded_weeks, set_expanded_weeks] = useState<string[]>([]);
 
   const update_weight_mutation = use_update_weight();
   const delete_weight_mutation = use_delete_weight();
 
   const weekly_averages = calculate_weekly_averages(weights);
+
+  // Initialize expanded state - current week should be expanded by default
+  React.useEffect(() => {
+    if (weekly_averages.length > 0 && expanded_weeks.length === 0) {
+      const current_week = weekly_averages.find((week) =>
+        is_current_week(week.week_start)
+      );
+      if (current_week) {
+        set_expanded_weeks([current_week.week_start]);
+      }
+    }
+  }, [weekly_averages.length]);
+
+  const toggle_week_expansion = (week_start: string) => {
+    set_expanded_weeks((prev) => {
+      if (prev.includes(week_start)) {
+        return prev.filter((week) => week !== week_start);
+      } else {
+        return [...prev, week_start];
+      }
+    });
+  };
+
+  const is_week_expanded = (week_start: string) => {
+    return expanded_weeks.includes(week_start);
+  };
 
   const handle_edit = (weight: Weight) => {
     set_editing_id(weight.id);
@@ -141,14 +171,32 @@ export function WeeklyWeightList({
         <div className="space-y-4">
           {weekly_averages.map((week) => (
             <div key={week.week_start} className="space-y-2">
-              {/* Week Header with Average */}
-              <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div>
-                  <div className="font-semibold text-blue-800 dark:text-blue-200">
-                    {get_week_header_text(week.week_start)}
-                  </div>
-                  <div className="text-xs text-blue-800 dark:text-blue-400">
-                    {get_week_subtitle(week.week_start)}
+              {/* Clickable Week Header with Average */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggle_week_expansion(week.week_start);
+                }}
+                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/40 dark:hover:to-blue-800/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700"
+              >
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    animate={{
+                      rotate: is_week_expanded(week.week_start) ? 180 : 0,
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </motion.div>
+
+                  <div>
+                    <div className="font-semibold text-blue-800 dark:text-blue-200 text-left">
+                      {get_week_header_text(week.week_start)}
+                    </div>
+                    <div className="text-xs text-blue-800 dark:text-blue-400 text-left">
+                      {get_week_subtitle(week.week_start)}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -159,82 +207,100 @@ export function WeeklyWeightList({
                     average ({week.count} entries)
                   </div>
                 </div>
-              </div>
+              </button>
 
-              {/* Daily Entries for the Week */}
-              <div className="space-y-2 ml-4">
-                {week.weights.map((weight) => (
-                  <div
-                    key={weight.id}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+              {/* Collapsible Daily Entries for the Week */}
+              <AnimatePresence>
+                {is_week_expanded(week.week_start) && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
                   >
-                    <div className="flex-1">
-                      <div className="font-medium text-foreground">
-                        {format_date(weight.date)}
-                      </div>
-                      {editing_id === weight.id ? (
-                        <div className="flex items-center gap-2 mt-1">
-                          <Input
-                            type="number"
-                            step="0.1"
-                            value={edit_value}
-                            onChange={(e) =>
-                              set_edit_value(parseFloat(e.target.value) || 0)
-                            }
-                            className="w-20"
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            kg
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="text-2xl font-bold text-primary">
-                          {format_weight_value(weight.value)}
-                        </div>
-                      )}
-                    </div>
+                    <div className="space-y-2 ml-4 pt-2">
+                      {week.weights.map((weight) => (
+                        <motion.div
+                          key={weight.id}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium text-foreground">
+                              {format_date(weight.date)}
+                            </div>
+                            {editing_id === weight.id ? (
+                              <div className="flex items-center gap-2 mt-1">
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={edit_value}
+                                  onChange={(e) =>
+                                    set_edit_value(
+                                      parseFloat(e.target.value) || 0
+                                    )
+                                  }
+                                  className="w-20"
+                                />
+                                <span className="text-sm text-muted-foreground">
+                                  kg
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="text-2xl font-bold text-primary">
+                                {format_weight_value(weight.value)}
+                              </div>
+                            )}
+                          </div>
 
-                    <div className="flex items-center gap-2">
-                      {editing_id === weight.id ? (
-                        <>
-                          <Button
-                            size="sm"
-                            onClick={handle_save}
-                            disabled={update_weight_mutation.isPending}
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={handle_cancel}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handle_edit(weight)}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handle_delete(weight.id)}
-                            disabled={delete_weight_mutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
+                          <div className="flex items-center gap-2">
+                            {editing_id === weight.id ? (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={handle_save}
+                                  disabled={update_weight_mutation.isPending}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={handle_cancel}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handle_edit(weight)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handle_delete(weight.id)}
+                                  disabled={delete_weight_mutation.isPending}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>
