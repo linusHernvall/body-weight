@@ -44,12 +44,12 @@ export function SettingsMenu() {
 
   const handle_change_password = async () => {
     if (new_password !== confirm_password) {
-      set_password_error("New passwords do not match");
+      set_password_error("New passwords do not match.");
       return;
     }
 
     if (new_password.length < 6) {
-      set_password_error("Password must be at least 6 characters long");
+      set_password_error("Password must be at least 6 characters long.");
       return;
     }
 
@@ -264,7 +264,9 @@ export function SettingsMenu() {
             </DialogDescription>
           )}
           {active_section === "change_password" && (
-            <DialogDescription>Enter your new password below</DialogDescription>
+            <DialogDescription>
+              Enter your new password below:
+            </DialogDescription>
           )}
           {active_section === "delete_account" && (
             <DialogDescription>

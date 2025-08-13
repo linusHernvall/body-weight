@@ -82,25 +82,39 @@ export const weights_api = {
 export const user_profiles_api = {
   // Get user profile
   async get_profile(user_id: string) {
+    console.log("🔍 Fetching user profile for:", user_id);
+
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("id", user_id)
       .single();
 
-    if (error && error.code !== "PGRST116") throw error;
+    if (error && error.code !== "PGRST116") {
+      console.error("❌ Error fetching user profile:", error);
+      throw error;
+    }
+
+    console.log("✅ User profile fetched:", data);
     return data;
   },
 
   // Create or update user profile
   async upsert_profile(user_id: string, goal_weight: number | null) {
+    console.log("📝 Upserting user profile:", { user_id, goal_weight });
+
     const { data, error } = await supabase
       .from("user_profiles")
       .upsert({ id: user_id, goal_weight })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("❌ Error upserting user profile:", error);
+      throw error;
+    }
+
+    console.log("✅ User profile upserted successfully:", data);
     return data;
   },
 
@@ -118,22 +132,25 @@ export const user_profiles_api = {
 export const auth_api = {
   // Sign up with email and password
   async sign_up(email: string, password: string) {
+    console.log("🚀 Starting user signup process...");
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error) throw error;
-
-    // Manually create user profile if signup was successful
-    if (data.user) {
-      try {
-        await user_profiles_api.upsert_profile(data.user.id, null);
-      } catch (profileError) {
-        console.warn("Failed to create user profile:", profileError);
-        // Don't throw error here as the user was created successfully
-      }
+    if (error) {
+      console.error("❌ Signup error:", error);
+      throw error;
     }
+
+    console.log("✅ User created successfully:", data.user?.id);
+    console.log(
+      "📝 User profile will be created automatically by database trigger"
+    );
+
+    // User profile will be created automatically by the database trigger
+    // No need to manually create it here to avoid race conditions
 
     return data;
   },
