@@ -3,7 +3,7 @@ const nextConfig = {
   // App Router is now the default in Next.js 14
   experimental: {
     // Enable optimizations for production
-    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+    optimizePackageImports: ["lucide-react"],
   },
   // Optimize images for production
   images: {
