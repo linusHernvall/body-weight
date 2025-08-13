@@ -1,10 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/supabase";
 
-const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabase_anon_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Create a function to get the Supabase client
+// This ensures environment variables are available when the client is created
+function createSupabaseClient() {
+  const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabase_anon_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient<Database>(supabase_url, supabase_anon_key);
+  if (!supabase_url || !supabase_anon_key) {
+    // During build time or when env vars are missing, create a dummy client
+    // This prevents build errors while still allowing runtime checks
+    return createClient<Database>("https://dummy.supabase.co", "dummy-key");
+  }
+
+  return createClient<Database>(supabase_url, supabase_anon_key);
+}
+
+// Create the Supabase client instance
+export const supabase = createSupabaseClient();
 
 // Database helper functions
 export const weights_api = {

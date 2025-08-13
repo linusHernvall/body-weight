@@ -5,28 +5,39 @@ import { supabase, auth_api } from "@/lib/supabase";
 export function useAuth() {
   const [user, set_user] = useState<User | null>(null);
   const [loading, set_loading] = useState(true);
+  const [mounted, set_mounted] = useState(false);
 
   useEffect(() => {
-    // Get initial session
-    const get_session = async () => {
+    set_mounted(true);
+
+    // Only run auth logic on the client side
+    if (typeof window !== "undefined") {
+      // Get initial session
+      const get_session = async () => {
+        try {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          set_user(session?.user ?? null);
+          set_loading(false);
+        } catch (error) {
+          console.error("Error getting session:", error);
+          set_loading(false);
+        }
+      };
+
+      get_session();
+
+      // Listen for auth changes
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      set_user(session?.user ?? null);
-      set_loading(false);
-    };
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
+        set_user(session?.user ?? null);
+        set_loading(false);
+      });
 
-    get_session();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      set_user(session?.user ?? null);
-      set_loading(false);
-    });
-
-    return () => subscription.unsubscribe();
+      return () => subscription.unsubscribe();
+    }
   }, []);
 
   const sign_up = async (email: string, password: string) => {
@@ -51,7 +62,7 @@ export function useAuth() {
 
   return {
     user,
-    loading,
+    loading: loading || !mounted,
     sign_up,
     sign_in,
     reset_password,
