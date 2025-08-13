@@ -57,7 +57,6 @@ export function ResetPasswordForm() {
           });
 
           if (error) {
-            console.error("Error setting session:", error);
             set_error(
               "Invalid or expired reset link. Please request a new one."
             );
@@ -87,7 +86,6 @@ export function ResetPasswordForm() {
           }
         }
       } catch (error) {
-        console.error("Error in reset flow:", error);
         set_error("Invalid or expired reset link. Please request a new one.");
       } finally {
         set_loading(false);

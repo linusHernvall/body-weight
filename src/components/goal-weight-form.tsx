@@ -47,7 +47,7 @@ export function GoalWeightForm({
       setIs_editing(false);
       on_success?.();
     } catch (error) {
-      console.error("Error updating goal weight:", error);
+      // Silently handle goal weight update error
     }
   };
 

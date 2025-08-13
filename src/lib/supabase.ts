@@ -7,10 +7,7 @@ const supabase_anon_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Check if environment variables are available
 if (!supabase_url || !supabase_anon_key) {
-  console.error("Missing Supabase environment variables:", {
-    url: supabase_url ? "Set" : "Missing",
-    key: supabase_anon_key ? "Set" : "Missing",
-  });
+  throw new Error("Missing Supabase environment variables");
 }
 
 // Create the Supabase client instance
@@ -64,26 +61,11 @@ export const weights_api = {
 
     if (error) throw error;
   },
-
-  // Get weight for a specific date
-  async get_weight_by_date(user_id: string, date: string) {
-    const { data, error } = await supabase
-      .from("weights")
-      .select("*")
-      .eq("user_id", user_id)
-      .eq("date", date)
-      .single();
-
-    if (error && error.code !== "PGRST116") throw error;
-    return data;
-  },
 };
 
 export const user_profiles_api = {
   // Get user profile
   async get_profile(user_id: string) {
-    console.log("🔍 Fetching user profile for:", user_id);
-
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*")
@@ -91,18 +73,14 @@ export const user_profiles_api = {
       .single();
 
     if (error && error.code !== "PGRST116") {
-      console.error("❌ Error fetching user profile:", error);
       throw error;
     }
 
-    console.log("✅ User profile fetched:", data);
     return data;
   },
 
   // Create or update user profile
   async upsert_profile(user_id: string, goal_weight: number | null) {
-    console.log("📝 Upserting user profile:", { user_id, goal_weight });
-
     const { data, error } = await supabase
       .from("user_profiles")
       .upsert({ id: user_id, goal_weight })
@@ -110,11 +88,9 @@ export const user_profiles_api = {
       .single();
 
     if (error) {
-      console.error("❌ Error upserting user profile:", error);
       throw error;
     }
 
-    console.log("✅ User profile upserted successfully:", data);
     return data;
   },
 
@@ -132,26 +108,16 @@ export const user_profiles_api = {
 export const auth_api = {
   // Sign up with email and password
   async sign_up(email: string, password: string) {
-    console.log("🚀 Starting user signup process...");
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) {
-      console.error("❌ Signup error:", error);
       throw error;
     }
 
-    console.log("✅ User created successfully:", data.user?.id);
-    console.log(
-      "📝 User profile will be created automatically by database trigger"
-    );
-
     // User profile will be created automatically by the database trigger
-    // No need to manually create it here to avoid race conditions
-
     return data;
   },
 
@@ -183,8 +149,6 @@ export const auth_api = {
 
   // Delete user account
   async delete_user() {
-    console.log("🗑️ Starting secure account deletion process...");
-
     try {
       // Get current user ID
       const {
@@ -209,18 +173,13 @@ export const auth_api = {
         throw new Error(error_data.error || "Failed to delete account");
       }
 
-      console.log("✅ Account deletion completed successfully");
-
       // Sign out the user on the client side
       const { error: signout_error } = await supabase.auth.signOut();
 
       if (signout_error) {
-        console.warn("⚠️ Warning: Could not sign out user:", signout_error);
-      } else {
-        console.log("✅ User signed out successfully");
+        // Silently handle signout error
       }
     } catch (error) {
-      console.error("❌ Account deletion failed:", error);
       throw error;
     }
   },

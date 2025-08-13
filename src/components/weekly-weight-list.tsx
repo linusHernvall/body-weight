@@ -47,7 +47,7 @@ export function WeeklyWeightList({
         });
         set_editing_id(null);
       } catch (error) {
-        console.error("Error updating weight:", error);
+        // Silently handle weight update error
       }
     }
   };
@@ -61,7 +61,7 @@ export function WeeklyWeightList({
       try {
         await delete_weight_mutation.mutateAsync(id);
       } catch (error) {
-        console.error("Error deleting weight:", error);
+        // Silently handle weight deletion error
       }
     }
   };

@@ -21,7 +21,6 @@ export function useAuth() {
           set_user(session?.user ?? null);
           set_loading(false);
         } catch (error) {
-          console.error("Error getting session:", error);
           set_loading(false);
         }
       };

@@ -16,7 +16,6 @@ import { calculate_dashboard_stats } from "@/lib/utils";
 import Image from "next/image";
 
 export function Dashboard() {
-  const { user } = useAuth();
   const { data: weights = [], isLoading: weights_loading } = use_weights();
   const { data: user_profile, isLoading: profile_loading } = use_user_profile();
   const { theme } = useTheme();

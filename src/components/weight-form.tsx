@@ -8,11 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  use_add_weight,
-  use_update_weight,
-  use_weight_by_date,
-} from "@/hooks/use-weights";
+import { use_add_weight, use_update_weight } from "@/hooks/use-weights";
 import { Weight } from "@/types";
 import { format_date, format_weight_value } from "@/lib/utils";
 
@@ -66,7 +62,7 @@ export function WeightForm({
       form.reset();
       on_success?.();
     } catch (error) {
-      console.error("Error saving weight:", error);
+      // Silently handle weight save error
     }
   };
 

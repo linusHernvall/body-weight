@@ -87,7 +87,6 @@ export function SettingsMenu() {
       await delete_account();
       setIs_open(false);
     } catch (error) {
-      console.error("Error deleting account:", error);
       alert("Failed to delete account. Please try again.");
     } finally {
       setIs_deleting(false);
@@ -98,7 +97,7 @@ export function SettingsMenu() {
     try {
       await sign_out();
     } catch (error) {
-      console.error("Error signing out:", error);
+      // Silently handle sign out error
     }
   };
 

@@ -79,14 +79,3 @@ export function use_update_goal_weight() {
     },
   });
 }
-
-// Hook for checking if weight exists for a date
-export function use_weight_by_date(date: string) {
-  const { user } = useAuth();
-
-  return useQuery({
-    queryKey: ["weight_by_date", user?.id, date],
-    queryFn: () => weights_api.get_weight_by_date(user!.id, date),
-    enabled: !!user && !!date,
-  });
-}
