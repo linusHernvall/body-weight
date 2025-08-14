@@ -57,3 +57,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile-specific focus handling for dropdown buttons */
+@layer utilities {
+  .dropdown-button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Force transparent background when not expanded - highest specificity */
+  .dropdown-button:not(.expanded),
+  .dropdown-button:not(.expanded):focus,
+  .dropdown-button:not(.expanded):active,
+  .dropdown-button:not(.expanded):focus-visible,
+  .dropdown-button:not(.expanded):focus-within,
+  .dropdown-button:not(.expanded):hover {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+
+  /* Only show background when explicitly expanded */
+  .dropdown-button.expanded {
+    background-color: rgb(219 234 254) !important; /* bg-blue-100 */
+    background: rgb(219 234 254) !important;
+  }
+
+  .dark .dropdown-button.expanded {
+    background-color: rgba(30, 64, 175, 0.3) !important; /* bg-blue-800/30 */
+    background: rgba(30, 64, 175, 0.3) !important;
+  }
+
+  /* Prevent mobile browsers from applying their own focus styles */
+  .dropdown-button::-moz-focus-inner {
+    border: 0;
+  }
+}

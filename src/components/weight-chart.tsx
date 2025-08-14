@@ -6,7 +6,6 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
@@ -118,22 +117,30 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle>Weight Progress</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chart_data}>
+      <CardContent className="px-2 sm:px-6">
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            data={chart_data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+          >
             <XAxis
               dataKey="date"
               className="text-xs"
               tick={<CustomTick />}
               interval="preserveStartEnd"
+              axisLine={true}
+              tickLine={true}
             />
             <YAxis
               className="text-xs fill-foreground"
               tick={{ fontSize: 12, fill: "currentColor" }}
               domain={["dataMin - 2", "dataMax + 2"]}
+              axisLine={true}
+              tickLine={true}
+              width={40}
             />
             <Tooltip content={<CustomTooltip />} />
             <Line

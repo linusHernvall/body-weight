@@ -178,7 +178,11 @@ export function WeeklyWeightList({
                   e.stopPropagation();
                   toggle_week_expansion(week.week_start);
                 }}
-                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/40 dark:hover:to-blue-800/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700"
+                className={`dropdown-button  w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 focus:outline-none ${
+                  is_week_expanded(week.week_start)
+                    ? "expanded border-blue-200 dark:border-blue-800 "
+                    : "border-blue-200 dark:border-blue-900"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <motion.div

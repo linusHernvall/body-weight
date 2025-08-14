@@ -75,9 +75,9 @@ export function Dashboard() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Left Column - Forms and Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 lg:space-y-6">
             {/* Weight Form */}
             <WeightForm
               selected_date={selected_date}
@@ -115,7 +115,7 @@ export function Dashboard() {
           </div>
 
           {/* Right Column - Chart and History */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 lg:space-y-6">
             {/* Weight Chart */}
             <WeightChart
               weights={weights}
