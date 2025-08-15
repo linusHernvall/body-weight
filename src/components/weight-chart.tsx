@@ -132,7 +132,7 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
               tick={<CustomTick />}
               interval="preserveStartEnd"
               axisLine={true}
-              tickLine={true}
+              tickLine={false}
             />
             <YAxis
               className="text-xs fill-foreground"

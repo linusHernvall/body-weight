@@ -8,7 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { use_add_weight, use_update_weight } from "@/hooks/use-weights";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  use_add_weight,
+  use_update_weight,
+  use_weights,
+} from "@/hooks/use-weights";
 import { Weight } from "@/types";
 import { format_date, format_weight_value } from "@/lib/utils";
 
@@ -34,9 +46,16 @@ export function WeightForm({
   on_success,
 }: WeightFormProps) {
   const [is_editing, setIs_editing] = useState(false);
+  const [show_replace_dialog, setShow_replace_dialog] = useState(false);
+  const [conflicting_weight, setConflicting_weight] = useState<Weight | null>(
+    null
+  );
+  const [pending_form_data, setPending_form_data] =
+    useState<WeightFormData | null>(null);
 
   const add_weight_mutation = use_add_weight();
   const update_weight_mutation = use_update_weight();
+  const { data: all_weights } = use_weights();
 
   const form = useForm<WeightFormData>({
     resolver: zodResolver(weight_schema),
@@ -46,6 +65,10 @@ export function WeightForm({
     },
   });
 
+  const find_existing_weight_for_date = (date: string): Weight | null => {
+    return all_weights?.find((weight) => weight.date === date) || null;
+  };
+
   const onSubmit = async (data: WeightFormData) => {
     try {
       if (existing_weight && is_editing) {
@@ -53,17 +76,59 @@ export function WeightForm({
           id: existing_weight.id,
           value: data.value,
         });
+        form.reset();
+        on_success?.();
       } else {
+        // Check if there's already a weight for this date
+        const existing_weight_for_date = find_existing_weight_for_date(
+          data.date
+        );
+
+        if (existing_weight_for_date) {
+          // Show confirmation dialog
+          setConflicting_weight(existing_weight_for_date);
+          setPending_form_data(data);
+          setShow_replace_dialog(true);
+          return;
+        }
+
+        // No conflict, add the weight
         await add_weight_mutation.mutateAsync({
           date: data.date,
           value: data.value,
         });
+        form.reset();
+        on_success?.();
       }
+    } catch (error) {
+      console.error("Error saving weight:", error);
+    }
+  };
+
+  const handle_replace_weight = async () => {
+    if (!pending_form_data || !conflicting_weight) return;
+
+    try {
+      // Update the existing weight instead of creating a new one
+      await update_weight_mutation.mutateAsync({
+        id: conflicting_weight.id,
+        value: pending_form_data.value,
+      });
+
       form.reset();
+      setShow_replace_dialog(false);
+      setConflicting_weight(null);
+      setPending_form_data(null);
       on_success?.();
     } catch (error) {
-      // Silently handle weight save error
+      console.error("Error replacing weight:", error);
     }
+  };
+
+  const handle_cancel_replace = () => {
+    setShow_replace_dialog(false);
+    setConflicting_weight(null);
+    setPending_form_data(null);
   };
 
   const handle_edit = () => {
@@ -113,7 +178,8 @@ export function WeightForm({
               id="date"
               type="date"
               {...form.register("date")}
-              disabled={!!existing_weight}
+              disabled={!!existing_weight && is_editing}
+              max={new Date().toISOString().split("T")[0]}
             />
             {form.formState.errors.date && (
               <p className="text-sm text-red-600 dark:text-red-400">
@@ -159,6 +225,47 @@ export function WeightForm({
           </div>
         </form>
       </CardContent>
+
+      {/* Replace Weight Confirmation Dialog */}
+      <Dialog open={show_replace_dialog} onOpenChange={setShow_replace_dialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Weight Already Exists</DialogTitle>
+            <DialogDescription>
+              You already have a weight entry of{" "}
+              <span className="font-semibold">
+                {conflicting_weight
+                  ? format_weight_value(conflicting_weight.value)
+                  : ""}
+              </span>{" "}
+              for{" "}
+              {conflicting_weight ? format_date(conflicting_weight.date) : ""}.
+              <br />
+              <br />
+              Do you want to replace it with the new value of{" "}
+              <span className="font-semibold">
+                {pending_form_data
+                  ? format_weight_value(pending_form_data.value)
+                  : ""}
+                ?
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handle_cancel_replace}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handle_replace_weight}
+              disabled={update_weight_mutation.isPending}
+            >
+              {update_weight_mutation.isPending
+                ? "Replacing..."
+                : "Replace Weight"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
