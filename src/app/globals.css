@@ -70,7 +70,7 @@
     user-select: none;
   }
 
-  /* Force transparent background when not expanded - but allow hover */
+  /* Force transparent background when not expanded */
   .dropdown-button:not(.expanded),
   .dropdown-button:not(.expanded):focus,
   .dropdown-button:not(.expanded):active,
@@ -79,17 +79,6 @@
     background-color: transparent !important;
     background: transparent !important;
     background-image: none !important;
-  }
-
-  /* Allow hover states for non-expanded buttons */
-  .dropdown-button:not(.expanded):hover {
-    background-color: rgb(219 234 254) !important; /* bg-blue-100 */
-    background: rgb(219 234 254) !important;
-  }
-
-  .dark .dropdown-button:not(.expanded):hover {
-    background-color: rgba(30, 64, 175, 0.3) !important; /* bg-blue-800/30 */
-    background: rgba(30, 64, 175, 0.3) !important;
   }
 
   /* Show background when explicitly expanded */

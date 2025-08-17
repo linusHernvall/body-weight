@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,6 @@ import {
 } from "@/lib/utils";
 import { use_update_weight, use_delete_weight } from "@/hooks/use-weights";
 import { Edit2, Trash2, Check, X } from "lucide-react";
-import React from "react";
 
 interface WeeklyWeightListProps {
   weights: Weight[];
@@ -31,14 +30,13 @@ export function WeeklyWeightList({
   const [editing_id, set_editing_id] = useState<string | null>(null);
   const [edit_value, set_edit_value] = useState<number>(0);
   const [expanded_weeks, set_expanded_weeks] = useState<string[]>([]);
-
   const update_weight_mutation = use_update_weight();
   const delete_weight_mutation = use_delete_weight();
 
   const weekly_averages = calculate_weekly_averages(weights);
 
   // Initialize expanded state - current week should be expanded by default
-  React.useEffect(() => {
+  useEffect(() => {
     if (weekly_averages.length > 0 && expanded_weeks.length === 0) {
       const current_week = weekly_averages.find((week) =>
         is_current_week(week.week_start)
@@ -177,6 +175,7 @@ export function WeeklyWeightList({
                   e.preventDefault();
                   e.stopPropagation();
                   toggle_week_expansion(week.week_start);
+                  (e.currentTarget as HTMLButtonElement).blur();
                 }}
                 className={`dropdown-button  w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 focus:outline-none ${
                   is_week_expanded(week.week_start)
