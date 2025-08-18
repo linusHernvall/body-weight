@@ -58,7 +58,9 @@ export function SignupForm({ on_switch_to_login }: SignupFormProps) {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Create account</CardTitle>
+        <CardTitle className="text-2xl text-center">
+          <h1>Create account</h1>
+        </CardTitle>
         <p className="text-center text-muted-foreground">
           Enter your details to create your account.
         </p>

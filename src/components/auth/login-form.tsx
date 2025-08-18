@@ -51,7 +51,7 @@ export function LoginForm({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">
-          Continue your progress
+          <h1>Continue your progress</h1>
         </CardTitle>
         <p className="text-center text-muted-foreground">
           Enter your credentials to access your account.

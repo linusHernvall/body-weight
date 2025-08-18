@@ -75,6 +75,13 @@ export function Dashboard() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Welcome to MassLog!</h1>
+          <p className="text-gray-600 dark:text-gray-400 max-w-md">
+            Track your weight progress with charts and insights. Keep track of
+            your weight, set goals and see your progress over time.
+          </p>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Left Column - Forms and Stats */}
           <div className="lg:col-span-1 space-y-4 lg:space-y-6">
