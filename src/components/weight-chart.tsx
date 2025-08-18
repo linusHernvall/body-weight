@@ -10,7 +10,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Weight } from "@/types";
-import { format_date, format_weight_value } from "@/lib/utils";
+import { format_date } from "@/lib/utils";
+import { useUnits } from "@/contexts/units-context";
 
 interface WeightChartProps {
   weights: Weight[];
@@ -18,6 +19,7 @@ interface WeightChartProps {
 }
 
 export function WeightChart({ weights, goal_weight }: WeightChartProps) {
+  const { convert_to_display, format_weight } = useUnits();
   if (weights.length === 0) {
     return (
       <Card>
@@ -69,8 +71,8 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
   // Format data for chart
   const chart_data = filtered_weights.map((weight) => ({
     date: format_date(weight.date),
-    weight: weight.value,
-    goal: goal_weight,
+    weight: convert_to_display(weight.value),
+    goal: goal_weight ? convert_to_display(goal_weight) : null,
     raw_date: weight.date, // Keep raw date for custom tick formatting
   }));
 
@@ -80,11 +82,11 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
         <div className="bg-background border rounded-lg p-3 shadow-lg">
           <p className="font-medium">{label}</p>
           <p className="text-primary">
-            Weight: {format_weight_value(payload[0].value)}
+            Weight: {format_weight(payload[0].value)}
           </p>
           {goal_weight && (
             <p className="text-muted-foreground">
-              Goal: {format_weight_value(goal_weight)}
+              Goal: {format_weight(convert_to_display(goal_weight))}
             </p>
           )}
         </div>
@@ -140,7 +142,8 @@ export function WeightChart({ weights, goal_weight }: WeightChartProps) {
               domain={["dataMin - 2", "dataMax + 2"]}
               axisLine={true}
               tickLine={true}
-              width={40}
+              width={50}
+              tickFormatter={(value) => format_weight(value).split(" ")[0]}
             />
             <Tooltip content={<CustomTooltip />} />
             <Line

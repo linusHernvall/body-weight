@@ -12,13 +12,16 @@ import { WeeklyWeightList } from "@/components/weekly-weight-list";
 import { GoalWeightForm } from "@/components/goal-weight-form";
 import { SettingsMenu } from "@/components/settings-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UnitToggle } from "@/components/unit-toggle";
 import { calculate_dashboard_stats } from "@/lib/utils";
+import { useUnits } from "@/contexts/units-context";
 import Image from "next/image";
 
 export function Dashboard() {
   const { data: weights = [], isLoading: weights_loading } = use_weights();
   const { data: user_profile, isLoading: profile_loading } = use_user_profile();
   const { theme } = useTheme();
+  const { unit } = useUnits();
   const [mounted, setMounted] = useState(false);
   const [selected_date, set_selected_date] = useState<string>(
     new Date().toISOString().split("T")[0]
@@ -65,7 +68,8 @@ export function Dashboard() {
                 />
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              <UnitToggle />
               <ThemeToggle />
               <SettingsMenu />
             </div>
@@ -87,12 +91,14 @@ export function Dashboard() {
           <div className="lg:col-span-1 space-y-4 lg:space-y-6">
             {/* Weight Form */}
             <WeightForm
+              key={`weight-form-${unit}`}
               selected_date={selected_date}
               existing_weight={today_weight}
             />
 
             {/* Goal Weight Form */}
             <GoalWeightForm
+              key={`goal-form-${unit}`}
               current_goal_weight={user_profile?.goal_weight || null}
             />
 
@@ -103,19 +109,16 @@ export function Dashboard() {
                 <DashboardCard
                   title="Current Weight"
                   value={stats.current_weight}
-                  unit="kg"
                 />
                 <DashboardCard
-                  title="Weekly Change (Avg)"
+                  title="Weekly Change (average)"
                   value={stats.weight_change_week}
                   change={stats.weight_change_week}
-                  unit="kg"
                 />
                 <DashboardCard
                   title="Total Change"
                   value={stats.total_change}
                   change={stats.total_change}
-                  unit="kg"
                 />
               </div>
             </div>
@@ -125,12 +128,14 @@ export function Dashboard() {
           <div className="lg:col-span-2 space-y-4 lg:space-y-6">
             {/* Weight Chart */}
             <WeightChart
+              key={`chart-${unit}`}
               weights={weights}
               goal_weight={user_profile?.goal_weight || null}
             />
 
             {/* Weight History */}
             <WeeklyWeightList
+              key={`list-${unit}`}
               weights={weights}
               goal_weight={user_profile?.goal_weight || null}
             />

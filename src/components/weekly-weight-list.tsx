@@ -11,10 +11,10 @@ import {
   calculate_weekly_averages,
   format_date,
   format_week_range,
-  format_weight_value,
   is_current_week,
   is_previous_week,
 } from "@/lib/utils";
+import { useUnits } from "@/contexts/units-context";
 import { use_update_weight, use_delete_weight } from "@/hooks/use-weights";
 import { Edit2, Trash2, Check, X } from "lucide-react";
 
@@ -32,6 +32,7 @@ export function WeeklyWeightList({
   const [expanded_weeks, set_expanded_weeks] = useState<string[]>([]);
   const update_weight_mutation = use_update_weight();
   const delete_weight_mutation = use_delete_weight();
+  const { convert_to_display, convert_to_storage, format_weight } = useUnits();
 
   const weekly_averages = calculate_weekly_averages(weights);
 
@@ -63,7 +64,7 @@ export function WeeklyWeightList({
 
   const handle_edit = (weight: Weight) => {
     set_editing_id(weight.id);
-    set_edit_value(weight.value);
+    set_edit_value(convert_to_display(weight.value));
   };
 
   const handle_save = async () => {
@@ -71,7 +72,7 @@ export function WeeklyWeightList({
       try {
         await update_weight_mutation.mutateAsync({
           id: editing_id,
-          value: edit_value,
+          value: convert_to_storage(edit_value),
         });
         set_editing_id(null);
       } catch (error) {
@@ -204,7 +205,7 @@ export function WeeklyWeightList({
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold text-blue-800 dark:text-blue-200">
-                    {week.average} kg
+                    {format_weight(convert_to_display(week.average))}
                   </div>
                   <div className="text-xs text-blue-800 dark:text-blue-400">
                     average ({week.count} entries)
@@ -250,12 +251,14 @@ export function WeeklyWeightList({
                                   className="w-20"
                                 />
                                 <span className="text-sm text-muted-foreground">
-                                  kg
+                                  {format_weight(edit_value).split(" ")[1]}
                                 </span>
                               </div>
                             ) : (
                               <div className="text-2xl font-bold text-primary">
-                                {format_weight_value(weight.value)}
+                                {format_weight(
+                                  convert_to_display(weight.value)
+                                )}
                               </div>
                             )}
                           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,17 +22,25 @@ import {
   use_weights,
 } from "@/hooks/use-weights";
 import { Weight } from "@/types";
-import { format_date, format_weight_value } from "@/lib/utils";
+import { format_date } from "@/lib/utils";
+import { useUnits } from "@/contexts/units-context";
 
-const weight_schema = z.object({
-  date: z.string().min(1, "Date is required"),
-  value: z
-    .number()
-    .min(20, "Weight must be at least 20kg")
-    .max(500, "Weight must be less than 500kg"),
-});
+const create_weight_schema = (unit: "kg" | "lbs") =>
+  z.object({
+    date: z.string().min(1, "Date is required"),
+    value: z
+      .number()
+      .min(
+        unit === "kg" ? 20 : 44,
+        `Weight must be at least ${unit === "kg" ? "20kg" : "44lbs"}`
+      )
+      .max(
+        unit === "kg" ? 500 : 1100,
+        `Weight must be less than ${unit === "kg" ? "500kg" : "1100lbs"}`
+      ),
+  });
 
-type WeightFormData = z.infer<typeof weight_schema>;
+type WeightFormData = z.infer<ReturnType<typeof create_weight_schema>>;
 
 interface WeightFormProps {
   selected_date?: string;
@@ -56,14 +64,24 @@ export function WeightForm({
   const add_weight_mutation = use_add_weight();
   const update_weight_mutation = use_update_weight();
   const { data: all_weights } = use_weights();
+  const { unit, convert_to_display, convert_to_storage, format_weight } =
+    useUnits();
+
+  // Create schema that updates when unit changes
+  const schema = useMemo(() => create_weight_schema(unit), [unit]);
 
   const form = useForm<WeightFormData>({
-    resolver: zodResolver(weight_schema),
+    resolver: zodResolver(schema),
     defaultValues: {
       date: selected_date || new Date().toISOString().split("T")[0],
-      value: existing_weight?.value || 0,
+      value: existing_weight ? convert_to_display(existing_weight.value) : 0,
     },
   });
+
+  // Update form resolver when unit changes
+  useEffect(() => {
+    form.clearErrors();
+  }, [unit, form]);
 
   const find_existing_weight_for_date = (date: string): Weight | null => {
     return all_weights?.find((weight) => weight.date === date) || null;
@@ -74,7 +92,7 @@ export function WeightForm({
       if (existing_weight && is_editing) {
         await update_weight_mutation.mutateAsync({
           id: existing_weight.id,
-          value: data.value,
+          value: convert_to_storage(data.value),
         });
         form.reset();
         on_success?.();
@@ -95,7 +113,7 @@ export function WeightForm({
         // No conflict, add the weight
         await add_weight_mutation.mutateAsync({
           date: data.date,
-          value: data.value,
+          value: convert_to_storage(data.value),
         });
         form.reset();
         on_success?.();
@@ -112,7 +130,7 @@ export function WeightForm({
       // Update the existing weight instead of creating a new one
       await update_weight_mutation.mutateAsync({
         id: conflicting_weight.id,
-        value: pending_form_data.value,
+        value: convert_to_storage(pending_form_data.value),
       });
 
       form.reset();
@@ -133,7 +151,10 @@ export function WeightForm({
 
   const handle_edit = () => {
     setIs_editing(true);
-    form.setValue("value", existing_weight?.value || 0);
+    form.setValue(
+      "value",
+      existing_weight ? convert_to_display(existing_weight.value) : 0
+    );
   };
 
   const handle_cancel = () => {
@@ -150,7 +171,7 @@ export function WeightForm({
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="text-2xl font-bold">
-              {format_weight_value(existing_weight.value)}
+              {format_weight(convert_to_display(existing_weight.value))}
             </div>
             <Button onClick={handle_edit} variant="outline" size="sm">
               Edit
@@ -189,7 +210,7 @@ export function WeightForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="value">Weight (kg)</Label>
+            <Label htmlFor="value">Weight ({unit})</Label>
             <Input
               id="value"
               type="number"
@@ -235,7 +256,7 @@ export function WeightForm({
               You already have a weight entry of{" "}
               <span className="font-semibold">
                 {conflicting_weight
-                  ? format_weight_value(conflicting_weight.value)
+                  ? format_weight(convert_to_display(conflicting_weight.value))
                   : ""}
               </span>{" "}
               for{" "}
@@ -245,10 +266,10 @@ export function WeightForm({
               Do you want to replace it with the new value of{" "}
               <span className="font-semibold">
                 {pending_form_data
-                  ? format_weight_value(pending_form_data.value)
+                  ? format_weight(pending_form_data.value)
                   : ""}
-                ?
               </span>
+              ?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

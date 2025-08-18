@@ -11,3 +11,5 @@ export interface UserProfile {
   goal_weight: number | null;
   created_at: string;
 }
+
+export type WeightUnit = "kg" | "lbs";
