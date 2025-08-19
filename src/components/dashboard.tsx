@@ -61,8 +61,8 @@ export function Dashboard() {
                   key={theme}
                   src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
                   alt="MassLog Logo"
-                  width={200}
-                  height={80}
+                  width={160}
+                  height={64}
                   className="w-40 h-16 md:w-60 md:h-24"
                   priority
                 />

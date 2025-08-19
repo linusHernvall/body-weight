@@ -29,16 +29,13 @@ export function AuthPage() {
                 key={theme}
                 src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
                 alt="MassLog Logo"
-                width={200}
-                height={80}
-                className="w-50 h-20"
+                width={160}
+                height={64}
+                className="w-40 h-16 md:w-60 md:h-24"
                 priority
               />
             )}
           </div>
-          {/* <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Welcome to MassLog!
-          </h1> */}
           <p className="text-gray-600 dark:text-gray-400">
             Track your weight progress with charts and insights.
           </p>
