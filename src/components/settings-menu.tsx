@@ -240,7 +240,7 @@ export function SettingsMenu() {
   return (
     <Dialog open={is_open} onOpenChange={setIs_open}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+        <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
           <Settings className="h-4 w-4" />
           <span className="sr-only">Settings</span>
         </Button>

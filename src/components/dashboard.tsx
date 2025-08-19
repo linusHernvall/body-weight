@@ -63,7 +63,7 @@ export function Dashboard() {
                   alt="MassLog Logo"
                   width={200}
                   height={80}
-                  className="w-50 h-20"
+                  className="w-40 h-16 md:w-60 md:h-24"
                   priority
                 />
               )}
