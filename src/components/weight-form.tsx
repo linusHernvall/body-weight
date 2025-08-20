@@ -22,7 +22,7 @@ import {
   use_weights,
 } from "@/hooks/use-weights";
 import { Weight } from "@/types";
-import { format_date } from "@/lib/utils";
+import { format_date, format_date_whole_month } from "@/lib/utils";
 import { useUnits } from "@/contexts/units-context";
 
 const create_weight_schema = (unit: "kg" | "lbs") =>
@@ -166,7 +166,9 @@ export function WeightForm({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Weight for {format_date(existing_weight.date)}</CardTitle>
+          <CardTitle>
+            Weight for {format_date_whole_month(existing_weight.date)}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
@@ -187,7 +189,7 @@ export function WeightForm({
       <CardHeader>
         <CardTitle>
           {existing_weight && is_editing
-            ? `Edit Weight for ${format_date(existing_weight.date)}`
+            ? `Edit Weight for ${format_date_whole_month(existing_weight.date)}`
             : "Record Today's Weight"}
         </CardTitle>
       </CardHeader>

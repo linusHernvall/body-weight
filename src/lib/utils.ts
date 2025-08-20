@@ -6,6 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Date utilities
+export function format_date_whole_month(date: string | Date): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const day = d.getDate();
+  const month = d.toLocaleDateString("en-US", { month: "long" });
+  return `${day} ${month}`;
+}
+
 export function format_date(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
   const day = d.getDate();
