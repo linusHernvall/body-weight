@@ -101,6 +101,7 @@ export function WeeklyWeightList({
     } else if (is_previous_week(week_start)) {
       return "Last week";
     } else {
+      // const year = new Date(week_start).getFullYear();
       const week_end =
         weekly_averages.find((w) => w.week_start === week_start)?.week_end ||
         "";
@@ -114,33 +115,16 @@ export function WeeklyWeightList({
       weekly_averages.find((w) => w.week_start === week_start)?.week_end || ""
     );
 
-    if (is_current_week(week_start)) {
-      return `${start_date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })} - ${end_date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })}`;
-    } else if (is_previous_week(week_start)) {
-      return `${start_date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })} - ${end_date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })}`;
-    } else {
-      return `${start_date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })} - ${end_date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}`;
-    }
+    const start_day = start_date.getDate();
+    const start_month = start_date.toLocaleDateString("en-US", {
+      month: "short",
+    });
+    const end_day = end_date.getDate();
+    const end_month = end_date.toLocaleDateString("en-US", {
+      month: "short",
+    });
+
+    return `${start_day} ${start_month} - ${end_day} ${end_month}`;
   };
 
   if (weights.length === 0) {

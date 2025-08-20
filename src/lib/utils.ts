@@ -8,11 +8,9 @@ export function cn(...inputs: ClassValue[]) {
 // Date utilities
 export function format_date(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const day = d.getDate();
+  const month = d.toLocaleDateString("en-US", { month: "short" });
+  return `${day} ${month}`;
 }
 
 export function get_week_start(date: Date): Date {
@@ -44,15 +42,17 @@ export function format_week_range(
   const start_date = new Date(week_start);
   const end_date = new Date(week_end);
 
+  const start_day = start_date.getDate();
   const start_month = start_date.toLocaleDateString("en-US", {
     month: "short",
   });
+  const end_day = end_date.getDate();
   const end_month = end_date.toLocaleDateString("en-US", { month: "short" });
 
   if (start_date.getMonth() === end_date.getMonth()) {
-    return `${start_date.getDate()} ${start_month}-${end_date.getDate()} ${start_month}`;
+    return `${start_day} ${start_month} - ${end_day} ${start_month}`;
   } else {
-    return `${start_date.getDate()} ${start_month}-${end_date.getDate()} ${end_month}`;
+    return `${start_day} ${start_month} - ${end_day} ${end_month}`;
   }
 }
 

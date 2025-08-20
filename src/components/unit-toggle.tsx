@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useUnits } from "@/contexts/units-context";
 
 export function UnitToggle() {
