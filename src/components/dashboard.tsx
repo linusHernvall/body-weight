@@ -13,23 +13,119 @@ import { GoalWeightForm } from "@/components/goal-weight-form";
 import { SettingsMenu } from "@/components/settings-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UnitToggle } from "@/components/unit-toggle";
-import { calculate_dashboard_stats } from "@/lib/utils";
+import {
+  calculate_dashboard_stats,
+  format_date_whole_month,
+} from "@/lib/utils";
 import { useUnits } from "@/contexts/units-context";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { use_update_total_change_start_date } from "@/hooks/use-weights";
+import { Weight } from "@/types";
 import Image from "next/image";
+
+// Starting Date Form Component
+function StartingDateForm({
+  current_start_date,
+  weights,
+  on_success,
+}: {
+  current_start_date: string | null;
+  weights: Weight[];
+  on_success: () => void;
+}) {
+  const [selected_date, set_selected_date] = useState(current_start_date || "");
+  const update_start_date_mutation = use_update_total_change_start_date();
+
+  // Get available dates from weights for the date picker
+  const available_dates = weights
+    .map((w) => w.date)
+    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+  const handle_save = async () => {
+    try {
+      await update_start_date_mutation.mutateAsync(selected_date || null);
+      on_success();
+    } catch (error) {
+      console.error("Failed to update total change start date:", error);
+    }
+  };
+
+  // const handle_reset = async () => {
+  //   try {
+  //     await update_start_date_mutation.mutateAsync(null);
+  //     on_success();
+  //   } catch (error) {
+  //     console.error("Failed to reset total change start date:", error);
+  //   }
+  // };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="start_date">Select starting date:</Label>
+        <Input
+          id="start_date"
+          type="date"
+          value={selected_date}
+          onChange={(e) => set_selected_date(e.target.value)}
+          min={available_dates[0]}
+          max={available_dates[available_dates.length - 1]}
+        />
+        <p className="text-xs text-muted-foreground">
+          Choose a date from your weight history to use as the starting point
+          for total change calculations.
+        </p>
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          onClick={handle_save}
+          disabled={update_start_date_mutation.isPending}
+          className="flex-1"
+        >
+          {update_start_date_mutation.isPending ? "Saving..." : "Save"}
+        </Button>
+        {/* {current_start_date && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handle_reset}
+            disabled={update_start_date_mutation.isPending}
+            className="flex-1"
+          >
+            Reset to First Weight
+          </Button>
+        )} */}
+      </div>
+    </div>
+  );
+}
 
 export function Dashboard() {
   const { data: weights = [], isLoading: weights_loading } = use_weights();
   const { data: user_profile, isLoading: profile_loading } = use_user_profile();
   const { theme } = useTheme();
-  const { unit } = useUnits();
+  const { unit, format_weight, convert_to_display } = useUnits();
   const [mounted, setMounted] = useState(false);
   const [selected_date, set_selected_date] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
+  const [show_start_date_modal, set_show_start_date_modal] = useState(false);
 
   const stats = calculate_dashboard_stats(
     weights,
-    user_profile?.goal_weight || null
+    user_profile?.goal_weight || null,
+    user_profile?.total_change_start_date || null
   );
   const today_weight = weights.find((w) => w.date === selected_date);
 
@@ -115,11 +211,53 @@ export function Dashboard() {
                   value={stats.weight_change_week}
                   change={stats.weight_change_week}
                 />
-                <DashboardCard
-                  title="Total Change"
-                  value={stats.total_change}
-                  change={stats.total_change}
-                />
+                {/* Custom Total Change Card with Starting Point Controls */}
+                <Card className="transition-all duration-200 hover:shadow-md">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
+                      Total Change
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="text-2xl font-bold">
+                      {stats.total_change !== null &&
+                      stats.total_change !== undefined
+                        ? `${
+                            stats.total_change > 0
+                              ? "+ "
+                              : stats.total_change < 0
+                              ? "- "
+                              : ""
+                          }${format_weight(
+                            Math.abs(convert_to_display(stats.total_change))
+                          )}`
+                        : "No data"}
+                    </div>
+
+                    {/* Starting Point Display */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Starting point:</span>
+                      <span>
+                        {user_profile?.total_change_start_date
+                          ? format_date_whole_month(
+                              user_profile.total_change_start_date
+                            )
+                          : "First recorded weight"}
+                      </span>
+                    </div>
+
+                    {/* Change Starting Point Button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => set_show_start_date_modal(true)}
+                      className="w-full text-xs"
+                    >
+                      Change Starting Point
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -142,6 +280,23 @@ export function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Starting Date Selection Modal */}
+      <Dialog
+        open={show_start_date_modal}
+        onOpenChange={set_show_start_date_modal}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Total Change Starting Point</DialogTitle>
+          </DialogHeader>
+          <StartingDateForm
+            current_start_date={user_profile?.total_change_start_date || null}
+            weights={weights}
+            on_success={() => set_show_start_date_modal(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

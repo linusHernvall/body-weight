@@ -9,6 +9,7 @@ export interface Weight {
 export interface UserProfile {
   id: string;
   goal_weight: number | null;
+  total_change_start_date: string | null;
   created_at: string;
 }
 

@@ -159,7 +159,20 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE PROCEDURE handle_new_user();
 ```
 
-### 4. Run the Application
+### 4. Run the Migration (Optional - for existing projects)
+
+If you're updating an existing project, run this additional SQL command in your Supabase SQL editor to add the new total change start date feature:
+
+```sql
+-- Add total_change_start_date column to user_profiles table
+ALTER TABLE user_profiles
+ADD COLUMN total_change_start_date DATE;
+
+-- Add a comment to document the column
+COMMENT ON COLUMN user_profiles.total_change_start_date IS 'Custom starting date for total change calculations. If NULL, uses the first recorded weight.';
+```
+
+### 5. Run the Application
 
 ```bash
 # Start the development server

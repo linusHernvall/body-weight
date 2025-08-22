@@ -79,3 +79,17 @@ export function use_update_goal_weight() {
     },
   });
 }
+
+// Hook for updating total change start date
+export function use_update_total_change_start_date() {
+  const query_client = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: (start_date: string | null) =>
+      user_profiles_api.update_total_change_start_date(user!.id, start_date),
+    onSuccess: () => {
+      query_client.invalidateQueries({ queryKey: ["user_profile", user?.id] });
+    },
+  });
+}

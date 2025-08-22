@@ -94,6 +94,25 @@ export const user_profiles_api = {
     return data;
   },
 
+  // Update total change start date
+  async update_total_change_start_date(
+    user_id: string,
+    start_date: string | null
+  ) {
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .update({ total_change_start_date: start_date })
+      .eq("id", user_id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
+
   // Delete user profile
   async delete_profile(user_id: string) {
     const { error } = await supabase

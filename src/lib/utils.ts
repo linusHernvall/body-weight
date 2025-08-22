@@ -183,7 +183,8 @@ function calculate_weekly_averages_simple(
 
 export function calculate_dashboard_stats(
   weights: Array<{ date: string; value: number }>,
-  goal_weight: number | null
+  goal_weight: number | null,
+  total_change_start_date: string | null = null
 ): {
   current_weight: number | null;
   weight_change_week: number | null;
@@ -204,8 +205,26 @@ export function calculate_dashboard_stats(
   );
 
   const current_weight = sorted_weights[0].value;
-  const first_weight = sorted_weights[sorted_weights.length - 1].value;
-  const total_change = current_weight - first_weight;
+
+  // Calculate total change based on custom start date or first weight
+  let total_change: number;
+  if (total_change_start_date) {
+    // Find the weight at the custom start date
+    const start_weight = weights.find(
+      (w) => w.date === total_change_start_date
+    );
+    if (start_weight) {
+      total_change = current_weight - start_weight.value;
+    } else {
+      // If no weight found at the exact date, use the first weight
+      const first_weight = sorted_weights[sorted_weights.length - 1].value;
+      total_change = current_weight - first_weight;
+    }
+  } else {
+    // Use the first recorded weight
+    const first_weight = sorted_weights[sorted_weights.length - 1].value;
+    total_change = current_weight - first_weight;
+  }
 
   // Calculate weekly averages for more accurate weekly change
   const weekly_averages = calculate_weekly_averages_simple(weights);

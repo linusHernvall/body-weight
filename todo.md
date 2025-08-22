@@ -1,7 +1,5 @@
 <!-- TODO -->
 
-- Möjlighet att sätta ett nytt datum från där Total Change börjar räkna ifrån.
-
 <!-- NICE TO HAVE -->
 
 - Registrering av kroppsmått.

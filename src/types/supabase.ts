@@ -30,16 +30,19 @@ export interface Database {
         Row: {
           id: string;
           goal_weight: number | null;
+          total_change_start_date: string | null;
           created_at: string;
         };
         Insert: {
           id: string;
           goal_weight?: number | null;
+          total_change_start_date?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           goal_weight?: number | null;
+          total_change_start_date?: string | null;
           created_at?: string;
         };
       };
