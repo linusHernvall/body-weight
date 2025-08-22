@@ -9,15 +9,23 @@ export function cn(...inputs: ClassValue[]) {
 export function format_date_whole_month(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
   const day = d.getDate();
-  const month = d.toLocaleDateString("en-US", { month: "long" });
-  return `${day} ${month}`;
+  const month = d.toLocaleDateString("en-US", {
+    month: "long",
+  });
+  const year = d.toLocaleDateString("en-US", {
+    year: "numeric",
+  });
+  return `${day} ${month} ${year}`;
 }
 
 export function format_date(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
   const day = d.getDate();
   const month = d.toLocaleDateString("en-US", { month: "short" });
-  return `${day} ${month}`;
+  const year = d.toLocaleDateString("en-US", {
+    year: "numeric",
+  });
+  return `${day} ${month} ${year}`;
 }
 
 export function get_week_start(date: Date): Date {
