@@ -111,6 +111,11 @@ function StartingDateForm({
   );
 }
 
+// Helper function to find weight for a specific date
+function get_weight_for_date(weights: Weight[], date: string): Weight | null {
+  return weights.find((w) => w.date === date) || null;
+}
+
 export function Dashboard() {
   const { data: weights = [], isLoading: weights_loading } = use_weights();
   const { data: user_profile, isLoading: profile_loading } = use_user_profile();
@@ -239,9 +244,21 @@ export function Dashboard() {
                       <span>Starting point:</span>
                       <span>
                         {user_profile?.total_change_start_date
-                          ? format_date_whole_month(
-                              user_profile.total_change_start_date
-                            )
+                          ? (() => {
+                              const start_weight = get_weight_for_date(
+                                weights,
+                                user_profile.total_change_start_date
+                              );
+                              return `${format_date_whole_month(
+                                user_profile.total_change_start_date
+                              )} (${
+                                start_weight
+                                  ? format_weight(
+                                      convert_to_display(start_weight.value)
+                                    )
+                                  : "No weight recorded"
+                              })`;
+                            })()
                           : "First recorded weight"}
                       </span>
                     </div>
